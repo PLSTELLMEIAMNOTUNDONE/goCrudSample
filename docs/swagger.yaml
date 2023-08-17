@@ -1,0 +1,24 @@
+basePath: /
+host: localhost:5000
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  title: Swagger Example
+  version: "1.0"
+paths:
+  /task/all:
+    get:
+      description: shoing all tasks
+      operationId: getall
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: GetAll
+swagger: "2.0"
