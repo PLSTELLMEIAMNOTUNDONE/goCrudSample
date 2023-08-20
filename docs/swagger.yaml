@@ -1,11 +1,120 @@
 basePath: /
+definitions:
+  handlers.TaskWithNoId:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+    type: object
+  repository.Task:
+    properties:
+      id:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+    type: object
 host: localhost:5000
 info:
   contact: {}
-  description: This is a sample server Petstore server.
+  description: This is a aaa.
   title: Swagger Example
   version: "1.0"
 paths:
+  /task:
+    delete:
+      description: delete task with certain id
+      operationId: deleteTask
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: delete task with id
+    get:
+      description: get task with certain id
+      operationId: getTask
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: get task with id
+    post:
+      consumes:
+      - application/json
+      description: make task
+      operationId: posttask
+      parameters:
+      - description: task
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TaskWithNoId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: making task
+    put:
+      consumes:
+      - application/json
+      description: update task
+      operationId: updateTask
+      parameters:
+      - description: upd
+        in: body
+        name: text
+        required: true
+        schema:
+          $ref: '#/definitions/repository.Task'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: updating task
   /task/all:
     get:
       description: shoing all tasks

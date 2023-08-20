@@ -104,7 +104,24 @@ func (r *Repository) InsertTask(id int, text string, tags Tags) {
 	r.Database.MustExec("insert into tasks (id, text, tags)  values ($1, $2, $3);", id, text, as.String())
 }
 
-
+func (r *Repository) UpdateTaskText (id int, text string) {
+	r.Database.MustExec("update tasks set  text = $1 where id = $2 ;", text, id)
+}
+func (r *Repository) UpdateTaskTags (id int, tags Tags) {
+	var as strings.Builder
+	as.WriteString("{")
+	for i, tag := range tags {
+		as.WriteString(fmt.Sprintf("%s", tag))
+		if(i != len(tags) - 1) {
+			as.WriteString(", ")
+		}
+	}
+	as.WriteString("}")
+	r.Database.MustExec("update tasks set tags = $1 where id = $2 ;", as.String(), id)
+}
+func (r *Repository) DeleteTask(id int) {
+	r.Database.MustExec("delete from tasks where id = $1 ;", id)
+}
 func New(cnf Config) (*Repository, error) {
 	bd, er := new(cnf)
 	r := &Repository{bd}

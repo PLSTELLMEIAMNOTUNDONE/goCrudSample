@@ -1,23 +1,23 @@
 package taskservice
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	repository "maintmp/internal/repos"
 	"strings"
 	_ "github.com/lib/pq"
 	"golang.org/x/text/encoding/charmap"
-	
 )
 
 
-// -d  TT
-
 type TaskService struct {
+	nextId int
 	
 	rep *repository.Repository
-	nextId int
+	
 }
+
 
 func New() *TaskService {
 	ts := &TaskService{}
@@ -34,21 +34,22 @@ func New() *TaskService {
 		fmt.Print(string(a))
 	}
 	ts.rep = db
-    ts.nextId = 0
+	ts.nextId = 0
 	return ts
 }
-
-
+func (ts *TaskService) GetNextId() int {
+      ts.nextId++
+	  return ts.nextId
+}
 func (ts *TaskService) Create(text string,tags repository.Tags) int {
 	task := repository.Task {
-		Id : ts.nextId,
+		Id: ts.GetNextId(),
 		Text: text,
 		Tags: tags,
 	}
 
 
 	ts.rep.InsertTask(task.Id,task.Text, task.Tags)
-	ts.nextId++
 	return task.Id
 }
 
@@ -61,9 +62,15 @@ func (ts *TaskService) GetById(id int) (repository.Task, error) {
 }
 
 func (ts *TaskService) DeleteById(id int) error {
-	
-	
-	return fmt.Errorf("no Task with id = %d", id)
+	ts.rep.DeleteTask(id)
+	var er error
+	er = nil
+	defer func()  {
+		if  recover() != nil {
+			 er = errors.New("sql error")
+		}
+	}()
+	return er
 }
 
 func (ts *TaskService) GetAll() ([]repository.Task,error) {
@@ -73,4 +80,40 @@ func (ts *TaskService) GetAll() ([]repository.Task,error) {
 		return nil,e
 	}
 	return t, nil
+}
+func (ts *TaskService) UpdateTaskText(id int, text string) error {
+    ts.rep.UpdateTaskText(id, text)
+	var er error
+	er = nil
+	defer func()  {
+		if  recover() != nil {
+			 er = errors.New("sql error")
+		}
+	}()
+	return er
+}
+func (ts *TaskService) UpdateTaskTags(id int, tags repository.Tags) error {
+    ts.rep.UpdateTaskTags(id, tags)
+	var er error
+	er = nil
+	defer func()  {
+		if  recover() != nil {
+			 er = errors.New("sql error")
+		}
+	}()
+	return er
+	
+}
+func (ts *TaskService) UpdateTask (id int, text string,  tags repository.Tags) (error, error) {
+	 var er1 error 
+	 var er2 error 
+	 er1, er2 = nil, nil
+	 if text != "" {
+		er1 = ts.UpdateTaskText(id, text)
+	 }
+	 if tags != nil {
+		er2 = ts.UpdateTaskTags(id, tags)
+	 }
+	 return er1, er2
+	 
 }
